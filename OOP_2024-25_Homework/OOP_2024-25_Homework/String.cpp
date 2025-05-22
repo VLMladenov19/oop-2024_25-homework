@@ -1,0 +1,347 @@
+#pragma warning (push)
+#pragma warning (disable : 4996) // using standart C funtion (strcpy)
+
+#include "String.h"
+
+String::String()
+{
+	this->capacity_ = 32;
+	this->size_ = 0;
+	this->data_ = new char[this->capacity_ + 1]();
+}
+
+String::String(const char* data)
+{
+	size_t dataSize = strlen(data);
+	this->capacity_ = this->getNextPowerOfTwo(dataSize);
+	this->size_ = dataSize;
+	this->data_ = new char[this->capacity_ + 1];
+	strcpy(this->data_, data);
+}
+
+String::String(const String& other)
+{
+	this->copyFrom(other);
+}
+
+String& String::operator=(const String& other)
+{
+	if (this != &other)
+	{
+		this->free();
+		this->copyFrom(other);
+	}
+	return *this;
+}
+
+String& String::operator=(const char* data)
+{
+	if (*this != data)
+	{
+		this->free();
+		this->copyFrom(data);
+	}
+	return *this;
+}
+
+String::~String()
+{
+	this->free();
+}
+
+size_t String::size() const
+{
+	return this->size_;
+}
+
+size_t String::capacity() const
+{
+	return this->capacity_;
+}
+
+bool String::empty() const
+{
+	return (this->size_ == 0);
+}
+
+void String::resize(size_t capacity)
+{
+	this->capacity_ = capacity;
+
+	char* newData = new char[capacity + 1];
+	strcpy(newData, this->data_);
+
+	delete[] this->data_;
+	this->data_ = newData;
+}
+
+String& String::append(const String& other)
+{
+	*this += other;
+	return *this;
+}
+
+String& String::append(const char* data)
+{
+	*this += data;
+	return *this;
+}
+
+void String::push_back(char c)
+{
+	if (this->size_ + 1 >= this->capacity_)
+	{
+		resize(allocateCapacity(this->size_ + 1));
+	}
+
+	this->data_[this->size_] = c;
+	this->size_++;
+	this->data_[this->size_] = '\0';
+}
+
+void String::pop_back()
+{
+	if (this->size_ == 0)
+		return;
+
+	this->size_--;
+	this->data_[this->size_] = '\0';
+}
+
+String& String::insert(size_t pos, const String& other)
+{
+	if (pos > this->size_)
+		return *this;
+
+	if (this->capacity_ <= this->size_ + other.size_)
+	{
+		resize(this->allocateCapacity(this->size_ + other.size_));
+	}
+
+	for (size_t i = 0; i < pos; i++)
+	{
+		this->data_[i + this->size_] = this->data_[i];
+	}
+
+	for (size_t i = 0; i < other.size_; i++)
+	{
+		this->data_[i + pos] = other.data_[i];
+	}
+
+	this->size_ += other.size_;
+	this->data_[this->size_] = '\0';
+
+	return *this;
+}
+
+String& String::insert(size_t pos, const char* data)
+{
+	if (pos > this->size_)
+		return *this;
+
+	size_t strLen = strlen(data);
+	size_t newSize = this->size_ + strLen;
+	if (this->capacity_ <= newSize)
+	{
+		resize(this->allocateCapacity(newSize));
+	}
+
+	for (size_t i = 0; i < pos; i++)
+	{
+		this->data_[i + this->size_] = this->data_[i];
+	}
+
+	for (size_t i = 0; i < strLen; i++)
+	{
+		this->data_[i + pos] = data[i];
+	}
+
+	this->size_ = newSize;
+	this->data_[this->size_] = '\0';
+
+	return *this;
+}
+
+String& String::insert(size_t pos, char ch)
+{
+	if (pos > this->size_)
+		return *this;
+
+	if (this->capacity_ <= this->size_ + 1)
+	{
+		resize(this->allocateCapacity(this->size_ + 1));
+	}
+
+	for (size_t i = 0; i < pos; i++)
+	{
+		this->data_[i + this->size_] = this->data_[i];
+	}
+
+	this->data_[pos] = ch;
+	this->size_++;
+	this->data_[this->size_] = '\0';
+
+	return *this;
+}
+
+String& String::erase(size_t pos, size_t len)
+{
+	if (this->size_ <= pos)
+	{
+		return *this;
+	}
+
+	if (this->size_ < pos + len)
+	{
+		len = this->size_ - pos;
+	}
+
+	for (size_t i = 0; i <= len; i++)
+	{
+		this->data_[pos + i] = this->data_[i + pos + len];
+	}
+
+	this->size_ -= len;
+
+	return *this;
+}
+
+void String::clear()
+{
+	this->size_ = 0;
+	this->data_[0] = '\0';
+}
+
+String& String::replace(size_t pos, size_t len, const String& other)
+{
+	this->erase(pos, len);
+	this->insert(pos, other);
+	return *this;
+}
+
+String& String::replace(size_t pos, size_t len, const char* data)
+{
+	return this->replace(pos, len, String(data));
+}
+
+size_t String::getNextPowerOfTwo(size_t num) const
+{
+	int power = 1;
+	while (power <= num)
+		power <<= 1;
+	return power;
+}
+
+size_t String::allocateCapacity(size_t size) const
+{
+	return std::max(this->getNextPowerOfTwo(size), 8llu);
+}
+
+void String::copyFrom(const String& other)
+{
+	delete[] this->data_;
+	this->capacity_ = other.capacity_;
+	this->size_ = other.size_;
+	this->data_ = new char[this->capacity_ + 1];
+	strcpy(this->data_, other.data_);
+}
+
+void String::copyFrom(const char* data)
+{
+	delete[] this->data_;
+	size_t dataLen = strlen(data);
+	this->capacity_ = this->getNextPowerOfTwo(dataLen);
+	this->size_ = dataLen;
+	this->data_ = new char[this->capacity_ + 1];
+	strcpy(this->data_, data);
+}
+
+void String::free()
+{
+	delete[] this->data_;
+	this->data_ = nullptr;
+}
+
+String& String::operator+=(const String& other)
+{
+	if (this->capacity_ <= this->size_ + other.size_)
+	{
+		resize(this->allocateCapacity(this->size_ + other.size_));
+	}
+
+	strcat(this->data_, other.data_);
+	this->size_ += other.size_;
+
+	return *this;
+}
+
+char& String::operator[](size_t pos)
+{
+	return this->data_[pos];
+}
+
+const char& String::operator[](size_t pos) const
+{
+	return this->data_[pos];
+}
+
+String::operator const char* () const
+{
+	return this->data_;
+}
+
+bool String::operator==(const String& other) const
+{
+	return strcmp(this->data_, other.data_) == 0;
+}
+
+bool String::operator==(const char* data) const
+{
+	return strcmp(this->data_, data_) == 0;
+}
+
+bool String::operator!=(const String& other) const
+{
+	return !(*this == other);
+}
+
+bool String::operator!=(const char* data) const
+{
+	return !(*this == data);
+}
+
+std::istream& getline(std::istream& is, String& str, char delim)
+{
+	str.clear();
+
+	char ch;
+	while (is.get(ch))
+	{
+		if (ch == delim)
+			break;
+		str.push_back(ch);
+	}
+	
+	return is;
+}
+
+std::istream& getline(std::istream& is, String& str)
+{
+	return getline(is, str, '\n');
+}
+
+void swap(String& lhs, String& rhs)
+{
+	String temp = lhs;
+	lhs = rhs;
+	rhs = temp;
+}
+
+String operator+(const String& lhs, const String& rhs)
+{
+	String result(lhs);
+	result += rhs;
+	return result;
+}
+
+#pragma warning (pop)

@@ -1,0 +1,64 @@
+#pragma once
+
+#include <iostream>
+
+class String
+{
+public:
+	static const size_t npos = -1;
+
+	String();
+	String(const char* data);
+	String(const String& other);
+	String& operator=(const String& other);
+	String& operator=(const char* data);
+
+	size_t size() const;
+	size_t capacity() const;
+	bool empty() const;
+
+	void resize(size_t capacity);
+	String& append(const String& other);
+	String& append(const char* data);
+	void push_back(char c);
+	void pop_back();
+
+	String& insert(size_t pos, const String& other);
+	String& insert(size_t pos, const char* data);
+	String& insert(size_t pos, char ch);
+
+	String& erase(size_t pos, size_t len);
+	void clear();
+
+	String& replace(size_t pos, size_t len, const String& other);
+	String& replace(size_t pos, size_t len, const char* data);
+
+	friend void swap(String& lhs, String& rhs);
+
+	String& operator+=(const String& other);
+	friend String operator+(const String& lhs, const String& rhs);
+	char& operator[](size_t pos);
+	const char& operator[](size_t pos) const;
+	operator const char* () const;
+	bool operator==(const String& other) const;
+	bool operator==(const char* data) const;
+	bool operator!=(const String& other) const;
+	bool operator!=(const char* data) const;
+
+	~String();
+
+private:
+	char* data_;
+	size_t size_;
+	size_t capacity_;
+
+	size_t getNextPowerOfTwo(size_t n) const;
+	size_t allocateCapacity(size_t n) const;
+
+	void copyFrom(const String& other);
+	void copyFrom(const char* data);
+	void free();
+};
+
+std::istream& getline(std::istream& is, String& str, char delim);
+std::istream& getline(std::istream& is, String& str);
