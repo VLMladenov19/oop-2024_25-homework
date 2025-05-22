@@ -33,6 +33,9 @@ public:
 	String& replace(size_t pos, size_t len, const String& other);
 	String& replace(size_t pos, size_t len, const char* data);
 
+	size_t find(const String& str, size_t pos = 0) const;
+	size_t find(const char* str, size_t pos = 0) const;
+
 	friend void swap(String& lhs, String& rhs);
 
 	String& operator+=(const String& other);

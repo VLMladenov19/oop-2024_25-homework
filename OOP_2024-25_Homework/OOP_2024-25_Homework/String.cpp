@@ -224,6 +224,32 @@ String& String::replace(size_t pos, size_t len, const char* data)
 	return this->replace(pos, len, String(data));
 }
 
+size_t String::find(const String& str, size_t pos) const
+{
+	if (str.size_ == 0 || this->size_ <= pos)
+		return String::npos;
+
+	for (size_t i = pos; i <= this->size_ - str.size_; i++)
+	{
+		size_t j = 0;
+
+		while (j < str.size_ && this->data_[i + j] == str.data_[j])
+		{
+			j++;
+		}
+
+		if (j == str.size_)
+			return i;
+	}
+
+	return npos;
+}
+
+size_t String::find(const char* str, size_t pos) const
+{
+	return find(String(str), pos);
+}
+
 size_t String::getNextPowerOfTwo(size_t num) const
 {
 	int power = 1;
