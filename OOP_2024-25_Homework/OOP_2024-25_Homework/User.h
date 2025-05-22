@@ -9,7 +9,7 @@ public:
 		const String& lName, const String& email, const String& pwd);
 	User(const User& other);
 	User& operator=(const User& other);
-	virtual ~User() = 0;
+	virtual ~User() = default;
 
 	virtual String getRole() = 0;
 	size_t getId() const;
