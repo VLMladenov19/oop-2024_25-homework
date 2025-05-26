@@ -6,7 +6,7 @@ Admin::Admin(size_t id, const String& fName, const String& lName,
 {
 }
 
-String Admin::getRole()
+UserRole Admin::getRole() const
 {
-	return String("Admin");
+	return UserRole::Admin;
 }

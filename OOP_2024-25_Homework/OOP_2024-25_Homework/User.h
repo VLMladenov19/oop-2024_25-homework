@@ -2,6 +2,17 @@
 
 #include "String.h"
 
+enum class UserRole
+{
+	None,
+	Admin,
+	Teacher,
+	Student
+};
+
+String roleToString(UserRole role);
+UserRole stringToRole(const String& string);
+
 class User
 {
 public:
@@ -11,7 +22,7 @@ public:
 	User& operator=(const User& other);
 	virtual ~User() = default;
 
-	virtual String getRole() = 0;
+	virtual UserRole getRole() const;
 	size_t getId() const;
 	const String& getFirstName() const;
 	const String& getLastName() const;
