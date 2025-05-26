@@ -6,21 +6,30 @@ class System
 {
 public:
 	System();
+	~System();
 
-	User getUserById() const;
-	User getUserByEmail() const;
+	void start();
+	void cycle();
+	void update();
+	void end();
+
+	User* getUserById() const;
+	User* getUserByEmail() const;
 	//const Vector<User>& getUsers() const;
 
-	User login();
+	User* login();
 
 	void serialize();
 	void deserialize();
 
-private:
-	const char* filename = "users.bin";
+	void registerUser(const User& user);
+	void removeUser(size_t id);
 
-	//Vector<User> users;
-	User currentUser;
+private:
+	const char* usersFile = "users.bin";
+
+	//Vector<User*> users;
+	User* currentUser;
 
 	void ensureAdminCreated();
 };

@@ -1,8 +1,14 @@
 #include <iostream>
 
-#include "String.h"
+#include "System.h"
 
 int main()
 {
-	
+	System sys;
+
+	sys.start();
+
+	sys.cycle();
+
+	sys.end();
 }
