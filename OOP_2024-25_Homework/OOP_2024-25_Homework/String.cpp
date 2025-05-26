@@ -64,6 +64,36 @@ bool String::empty() const
 	return (this->size_ == 0);
 }
 
+String String::toLower() const
+{
+	String result(*this);
+
+	for (size_t i = 0; i < result.size_; i++)
+	{
+		if ('A' <= result.data_[i] && result.data_[i] <= 'Z')
+		{
+			result.data_[i] = result.data_[i] - 'A' + 'a';
+		}
+	}
+
+	return result;
+}
+
+String String::toUpper() const
+{
+	String result(*this);
+
+	for (size_t i = 0; i < result.size_; i++)
+	{
+		if ('a' <= result.data_[i] && result.data_[i] <= 'z')
+		{
+			result.data_[i] = result.data_[i] - 'a' + 'A';
+		}
+	}
+
+	return result;
+}
+
 void String::resize(size_t capacity)
 {
 	this->capacity_ = capacity;
