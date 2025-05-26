@@ -82,3 +82,25 @@ void User::copyFrom(const User& other)
     this->email_ = other.email_;
     this->password_ = other.password_;
 }
+
+String roleToString(UserRole role)
+{
+    switch (role)
+    {
+    case UserRole::Admin: return "Admin";
+    case UserRole::Teacher: return "Teacher";
+    case UserRole::Student: return "Student";
+    default: return "None";
+    }
+}
+
+UserRole stringToRole(const String& string)
+{
+    String lower = string.toLower();
+
+    if (lower == "admin") return UserRole::Admin;
+    if (lower == "teacher") return UserRole::Teacher;
+    if (lower == "student") return UserRole::Student;
+
+    return UserRole::None;
+}
