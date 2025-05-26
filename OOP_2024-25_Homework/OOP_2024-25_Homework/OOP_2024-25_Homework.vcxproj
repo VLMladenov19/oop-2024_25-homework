@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Admin.h" />
+    <ClInclude Include="Response.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="User.h" />

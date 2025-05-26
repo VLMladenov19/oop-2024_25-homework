@@ -1,6 +1,7 @@
 #pragma once
 
 #include "User.h"
+#include "Response.h"
 
 class System
 {
@@ -13,14 +14,14 @@ public:
 	void update();
 	void end();
 
-	User* getUserById() const;
-	User* getUserByEmail() const;
+	Response<User*> getUserById() const;
+	Response<User*> getUserByEmail() const;
 	//const Vector<User>& getUsers() const;
 
 	void serialize();
 	void deserialize();
 
-	User* login();
+	Response<User*> login();
 	void registerUser(const User& user);
 	void removeUser(size_t id);
 

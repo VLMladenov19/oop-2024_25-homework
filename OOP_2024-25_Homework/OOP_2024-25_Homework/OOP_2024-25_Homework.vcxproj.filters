@@ -41,5 +41,8 @@
     <ClInclude Include="System.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Response.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
