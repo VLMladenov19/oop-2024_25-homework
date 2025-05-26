@@ -9,7 +9,4 @@ public:
 		const String& email, const String& pwd);
 
 	UserRole getRole() const override;
-
-	void registerUser(const User& user);
-	void removeUser(size_t id);
 };

@@ -17,11 +17,10 @@ public:
 	User* getUserByEmail() const;
 	//const Vector<User>& getUsers() const;
 
-	User* login();
-
 	void serialize();
 	void deserialize();
 
+	User* login();
 	void registerUser(const User& user);
 	void removeUser(size_t id);
 

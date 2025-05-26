@@ -7,8 +7,8 @@ int main()
 	System sys;
 
 	sys.start();
-
 	sys.cycle();
-
 	sys.end();
+
+	return 0;
 }
