@@ -17,6 +17,9 @@ public:
 	size_t capacity() const;
 	bool empty() const;
 
+	String toLower() const;
+	String toUpper() const;
+
 	void resize(size_t capacity);
 	String& append(const String& other);
 	String& append(const char* data);
