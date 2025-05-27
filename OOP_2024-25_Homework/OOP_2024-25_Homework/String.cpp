@@ -94,17 +94,6 @@ String String::toUpper() const
 	return result;
 }
 
-void String::resize(size_t capacity)
-{
-	this->capacity_ = capacity;
-
-	char* newData = new char[capacity + 1];
-	strcpy(newData, this->data_);
-
-	delete[] this->data_;
-	this->data_ = newData;
-}
-
 String& String::append(const String& other)
 {
 	*this += other;
@@ -119,9 +108,9 @@ String& String::append(const char* data)
 
 void String::push_back(char c)
 {
-	if (this->size_ + 1 >= this->capacity_)
+	if (this->capacity_ <= this->size_ + 1)
 	{
-		resize(allocateCapacity(this->size_ + 1));
+		this->resize(this->allocateCapacity(this->size_ + 1));
 	}
 
 	this->data_[this->size_] = c;
@@ -132,7 +121,9 @@ void String::push_back(char c)
 void String::pop_back()
 {
 	if (this->size_ == 0)
+	{
 		return;
+	}
 
 	this->size_--;
 	this->data_[this->size_] = '\0';
@@ -141,16 +132,18 @@ void String::pop_back()
 String& String::insert(size_t pos, const String& other)
 {
 	if (pos > this->size_)
+	{
 		return *this;
+	}
 
 	if (this->capacity_ <= this->size_ + other.size_)
 	{
-		resize(this->allocateCapacity(this->size_ + other.size_));
+		this->resize(this->allocateCapacity(this->size_ + other.size_));
 	}
 
-	for (size_t i = 0; i < pos; i++)
+	for (size_t i = this->size_; i > pos; i--)
 	{
-		this->data_[i + this->size_] = this->data_[i];
+		this->data_[i + other.size_ - 1] = this->data_[i - 1];
 	}
 
 	for (size_t i = 0; i < other.size_; i++)
@@ -166,19 +159,21 @@ String& String::insert(size_t pos, const String& other)
 
 String& String::insert(size_t pos, const char* data)
 {
-	if (pos > this->size_)
+	if (pos > this->size_ || data == nullptr)
+	{
 		return *this;
+	}
 
 	size_t strLen = strlen(data);
 	size_t newSize = this->size_ + strLen;
 	if (this->capacity_ <= newSize)
 	{
-		resize(this->allocateCapacity(newSize));
+		this->resize(this->allocateCapacity(newSize));
 	}
 
-	for (size_t i = 0; i < pos; i++)
+	for (size_t i = this->size_; i > pos; i--)
 	{
-		this->data_[i + this->size_] = this->data_[i];
+		this->data_[i + strLen - 1] = this->data_[i - 1];
 	}
 
 	for (size_t i = 0; i < strLen; i++)
@@ -195,16 +190,18 @@ String& String::insert(size_t pos, const char* data)
 String& String::insert(size_t pos, char ch)
 {
 	if (pos > this->size_)
+	{
 		return *this;
+	}
 
 	if (this->capacity_ <= this->size_ + 1)
 	{
-		resize(this->allocateCapacity(this->size_ + 1));
+		this->resize(this->allocateCapacity(this->size_ + 1));
 	}
 
-	for (size_t i = 0; i < pos; i++)
+	for (size_t i = this->size_; i > pos; i--)
 	{
-		this->data_[i + this->size_] = this->data_[i];
+		this->data_[i] = this->data_[i - 1];
 	}
 
 	this->data_[pos] = ch;
@@ -280,6 +277,17 @@ size_t String::find(const char* str, size_t pos) const
 	return find(String(str), pos);
 }
 
+void String::resize(size_t capacity)
+{
+	this->capacity_ = capacity;
+
+	char* newData = new char[capacity + 1];
+	strcpy(newData, this->data_);
+
+	delete[] this->data_;
+	this->data_ = newData;
+}
+
 size_t String::getNextPowerOfTwo(size_t num) const
 {
 	int power = 1;
@@ -322,7 +330,7 @@ String& String::operator+=(const String& other)
 {
 	if (this->capacity_ <= this->size_ + other.size_)
 	{
-		resize(this->allocateCapacity(this->size_ + other.size_));
+		this->resize(this->allocateCapacity(this->size_ + other.size_));
 	}
 
 	strcat(this->data_, other.data_);

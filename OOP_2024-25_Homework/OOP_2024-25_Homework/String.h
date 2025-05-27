@@ -20,7 +20,6 @@ public:
 	String toLower() const;
 	String toUpper() const;
 
-	void resize(size_t capacity);
 	String& append(const String& other);
 	String& append(const char* data);
 	void push_back(char c);
@@ -58,8 +57,9 @@ private:
 	size_t size_;
 	size_t capacity_;
 
-	size_t getNextPowerOfTwo(size_t n) const;
-	size_t allocateCapacity(size_t n) const;
+	void resize(size_t capacity);
+	size_t getNextPowerOfTwo(size_t num) const;
+	size_t allocateCapacity(size_t size) const;
 
 	void copyFrom(const String& other);
 	void copyFrom(const char* data);
