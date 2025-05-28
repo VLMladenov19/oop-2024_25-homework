@@ -10,18 +10,24 @@ String::String()
 	this->data_ = new char[this->capacity_ + 1]();
 }
 
+String::String(const String& other)
+{
+	this->copyFrom(other);
+}
+
 String::String(const char* data)
 {
+	if (!data)
+	{
+		*this = String();
+		return;
+	}
+
 	size_t dataSize = strlen(data);
 	this->capacity_ = this->getNextPowerOfTwo(dataSize);
 	this->size_ = dataSize;
 	this->data_ = new char[this->capacity_ + 1];
 	strcpy(this->data_, data);
-}
-
-String::String(const String& other)
-{
-	this->copyFrom(other);
 }
 
 String& String::operator=(const String& other)
@@ -36,10 +42,35 @@ String& String::operator=(const String& other)
 
 String& String::operator=(const char* data)
 {
-	if (*this != data)
+	if (*this != data && data)
 	{
 		this->free();
 		this->copyFrom(data);
+	}
+	return *this;
+}
+
+String::String(String&& other) noexcept
+	: data_(other.data_), size_(other.size_), capacity_(other.capacity_)
+{
+	other.data_ = nullptr;
+	other.size_ = 0;
+	other.capacity_ = 0;
+}
+
+String& String::operator=(String&& other) noexcept
+{
+	if (this != &other)
+	{
+		this->free();
+
+		this->data_ = other.data_;
+		this->size_ = other.size_;
+		this->capacity_ = other.capacity_;
+
+		other.data_ = nullptr;
+		other.size_ = 0;
+		other.capacity_ = 0;
 	}
 	return *this;
 }
@@ -102,6 +133,11 @@ String& String::append(const String& other)
 
 String& String::append(const char* data)
 {
+	if (data)
+	{
+		return *this;
+	}
+
 	*this += data;
 	return *this;
 }
@@ -159,7 +195,7 @@ String& String::insert(size_t pos, const String& other)
 
 String& String::insert(size_t pos, const char* data)
 {
-	if (pos > this->size_ || data == nullptr)
+	if (pos > this->size_ || !data)
 	{
 		return *this;
 	}
@@ -269,11 +305,16 @@ size_t String::find(const String& str, size_t pos) const
 			return i;
 	}
 
-	return npos;
+	return String::npos;
 }
 
 size_t String::find(const char* str, size_t pos) const
 {
+	if (!str)
+	{
+		return String::npos;
+	}
+
 	return find(String(str), pos);
 }
 
@@ -361,6 +402,11 @@ bool String::operator==(const String& other) const
 
 bool String::operator==(const char* data) const
 {
+	if (!data)
+	{
+		return false;
+	}
+
 	return strcmp(this->data_, data_) == 0;
 }
 

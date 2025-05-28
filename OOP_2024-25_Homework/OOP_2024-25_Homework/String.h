@@ -8,10 +8,12 @@ public:
 	static const size_t npos = -1;
 
 	String();
-	String(const char* data);
 	String(const String& other);
+	String(const char* data);
 	String& operator=(const String& other);
 	String& operator=(const char* data);
+	String(String&& other) noexcept;
+	String& operator=(String&& other) noexcept;
 
 	size_t size() const;
 	size_t capacity() const;
