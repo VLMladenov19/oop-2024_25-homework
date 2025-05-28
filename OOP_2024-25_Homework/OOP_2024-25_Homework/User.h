@@ -20,6 +20,8 @@ public:
 		const String& lName, const String& email, const String& pwd);
 	User(const User& other);
 	User& operator=(const User& other);
+	User(User&& other) noexcept;
+	User& operator=(User&& other) noexcept;
 	virtual ~User() = default;
 
 	virtual UserRole getRole() const;

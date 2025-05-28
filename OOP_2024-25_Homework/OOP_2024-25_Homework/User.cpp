@@ -21,6 +21,31 @@ User& User::operator=(const User& other)
     return *this;
 }
 
+User::User(User&& other) noexcept
+    : id_(other.id_),
+    firstName_(std::move(other.firstName_)),
+    lastName_(std::move(other.lastName_)),
+    email_(std::move(other.email_)),
+    password_(std::move(other.password_))
+{
+    other.id_ = 0;
+}
+
+User& User::operator=(User&& other) noexcept
+{
+    if (this != &other)
+    {
+        this->id_ = other.id_;
+        this->firstName_ = std::move(other.firstName_);
+        this->lastName_ = std::move(other.lastName_);
+        this->email_ = std::move(other.email_);
+        this->password_ = std::move(other.password_);
+
+        other.id_ = 0;
+    }
+    return *this;
+}
+
 UserRole User::getRole() const
 {
     return UserRole::None;

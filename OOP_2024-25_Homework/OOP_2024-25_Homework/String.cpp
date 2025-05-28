@@ -353,6 +353,12 @@ void String::copyFrom(const String& other)
 
 void String::copyFrom(const char* data)
 {
+	if (!data)
+	{
+		this->copyFrom(String());
+		return;
+	}
+
 	delete[] this->data_;
 	size_t dataLen = strlen(data);
 	this->capacity_ = this->getNextPowerOfTwo(dataLen);
