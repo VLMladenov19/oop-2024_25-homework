@@ -31,7 +31,12 @@ public:
 
 	friend void swap(Vector<T>& lhs, Vector<T>& rhs);
 
-	// Add operators
+	T& operator[](size_t pos);
+	const T& operator[](size_t pos) const;
+	bool operator==(const Vector<T>& other) const;
+	bool operator!=(const Vector<T>& other) const;
+
+	friend std::ostream& operator<<(std::ostream& os, const Vector<T>& vec);
 
 private:
 	T* data_;
@@ -85,7 +90,7 @@ inline Vector<T>::Vector(Vector<T>&& other) noexcept
 }
 
 template<typename T>
-inline Vector<T>& Vector<T>::operator=(Vector<T>&& other)
+inline Vector<T>& Vector<T>::operator=(Vector<T>&& other) noexcept
 {
 	if (this != &other)
 	{
@@ -238,6 +243,43 @@ inline void Vector<T>::clear()
 }
 
 template<typename T>
+inline T& Vector<T>::operator[](size_t pos)
+{
+	return this->data_[pos];
+}
+
+template<typename T>
+inline const T& Vector<T>::operator[](size_t pos) const
+{
+	return this->data_[pos];
+}
+
+template<typename T>
+inline bool Vector<T>::operator==(const Vector<T>& other) const
+{
+	if (this->size_ != other.size_)
+	{
+		return false;
+	}
+
+	for (size_t i = 0; i < this->size_; i++)
+	{
+		if (this->data_[i] != other.data_[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+template<typename T>
+inline bool Vector<T>::operator!=(const Vector<T>& other) const
+{
+	return !(*this == other);
+}
+
+template<typename T>
 inline void Vector<T>::resize(size_t capacity)
 {
 	this->capacity_ = capacity;
@@ -294,4 +336,17 @@ void swap(Vector<T>& lhs, Vector<T>& rhs)
 	std::swap(lhs.data_, rhs.data_);
 	std::swap(lhs.size_, rhs.size_);
 	std::swap(lhs.capacity_, rhs.capacity_);
+}
+
+template<typename T>
+inline std::ostream& operator<<(std::ostream& os, const Vector<T>& vec)
+{
+	os << "[";
+	for (size_t i = 0; i < vec.size_; ++i)
+	{
+		os << vec.data_[i];
+		if (i != vec.size_ - 1) os << ", ";
+	}
+	os << "]";
+	return os;
 }
