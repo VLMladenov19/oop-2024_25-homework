@@ -38,7 +38,7 @@ public:
 	void changePassword(const String& currPass, const String& newPass);
 
 	virtual std::ofstream& serialize(std::ofstream& os) const;
-	virtual std::ofstream& deserialize(std::ofstream& os);
+	virtual std::ifstream& deserialize(std::ifstream& is);
 
 protected:
 	size_t id_;
@@ -47,5 +47,7 @@ protected:
 	String email_;
 	String password_;
 
+	void setId(size_t id);
+	void setPassword(const String& pwd);
 	void copyFrom(const User& other);
 };

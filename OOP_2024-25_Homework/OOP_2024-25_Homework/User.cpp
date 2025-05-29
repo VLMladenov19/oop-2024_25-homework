@@ -124,6 +124,53 @@ std::ofstream& User::serialize(std::ofstream& os) const
     return os;
 }
 
+std::ifstream& User::deserialize(std::ifstream& is)
+{
+    // Id
+    size_t id = 0;
+    is.read((char*)&id, sizeof(id));
+    this->setId(id);
+
+    // First Name
+    this->setFirstName(readString(is));
+
+    // Last Name
+    this->setLastName(readString(is));
+
+    // Email
+    this->setEmail(readString(is));
+
+    // Password
+    this->setPassword(readString(is));
+
+    return is;
+}
+
+void User::setId(size_t id)
+{
+    this->id_ = id;
+}
+
+void User::setPassword(const String& pwd)
+{
+    this->password_ = pwd;
+}
+
+String& User::readString(std::ifstream& is) const
+{
+    size_t len = 0;
+    is.read((char*)&len, sizeof(len));
+
+    char* buffer = new char[len + 1];
+    is.read(buffer, len);
+    buffer[len] = '\0';
+
+    String result = buffer;
+    delete[] buffer;
+
+    return result;
+}
+
 void User::copyFrom(const User& other)
 {
     this->id_ = other.id_;
