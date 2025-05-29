@@ -7,11 +7,22 @@ class Response
 {
 public:
 	Response(bool success, String message) 
-		: success(success), message(message), object() {}
+		: success(success), message(message), object(nullptr) {}
 	Response(bool success, String message, const T& object)
 		: success(success), message(message), object(object) {}
 
 	bool success;
 	String message;
-	T object;
+	T* object;
+};
+
+template<>
+class Response<void>
+{
+public:
+	Response(bool success, String message)
+		: success(success), message(message) {}
+
+	bool success;
+	String message;
 };
