@@ -49,5 +49,8 @@ protected:
 
 	void setId(size_t id);
 	void setPassword(const String& pwd);
+
+	String& readString(std::ifstream& is) const;
+
 	void copyFrom(const User& other);
 };

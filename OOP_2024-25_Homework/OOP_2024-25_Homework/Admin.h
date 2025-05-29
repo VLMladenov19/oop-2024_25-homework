@@ -11,5 +11,4 @@ public:
 	UserRole getRole() const override;
 
 	std::ofstream& serialize(std::ofstream& os) const override;
-	std::ofstream& deserialize(std::ofstream& os) override;
 };
