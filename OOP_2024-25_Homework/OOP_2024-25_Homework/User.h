@@ -37,6 +37,9 @@ public:
 	bool checkPassword(const String& pass) const;
 	void changePassword(const String& currPass, const String& newPass);
 
+	virtual std::ofstream& serialize(std::ofstream& os) const;
+	virtual std::ofstream& deserialize(std::ofstream& os);
+
 protected:
 	size_t id_;
 	String firstName_;

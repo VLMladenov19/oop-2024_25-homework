@@ -1,5 +1,7 @@
 #include "User.h"
 
+#include <fstream>
+
 User::User(size_t id, const String& fName, const String& lName, 
     const String& email, const String& pwd)
     : id_(id), firstName_(fName), lastName_(lName), email_(email), password_(pwd)
@@ -97,6 +99,29 @@ void User::changePassword(const String& currPwd, const String& newPwd)
     {
         this->password_ = newPwd;
     }
+}
+
+std::ofstream& User::serialize(std::ofstream& os) const
+{
+    os.write((const char*)&this->id_, sizeof(this->id_));
+
+    size_t fNameLen = this->firstName_.size();
+    os.write((const char*)&fNameLen, sizeof(fNameLen));
+    os.write((const char*)firstName_, fNameLen);
+
+    size_t lNameLen = this->lastName_.size();
+    os.write((const char*)&lNameLen, sizeof(lNameLen));
+    os.write((const char*)lastName_, lNameLen);
+
+    size_t emailLen = this->email_.size();
+    os.write((const char*)&emailLen, sizeof(emailLen));
+    os.write((const char*)email_, emailLen);
+
+    size_t pwdLen = this->password_.size();
+    os.write((const char*)&pwdLen, sizeof(pwdLen));
+    os.write((const char*)password_, pwdLen);
+
+    return os;
 }
 
 void User::copyFrom(const User& other)
