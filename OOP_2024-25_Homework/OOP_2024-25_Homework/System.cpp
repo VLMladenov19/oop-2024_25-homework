@@ -48,13 +48,13 @@ void System::loop()
 			std::cout << res.message << '\n';
 			continue;
 		}
+		if (inputs.size() < 4)
+		{
+			std::cout << "Invalid input!\n";
+			continue;
+		}
 		if (command == "add_teacher")
 		{
-			if (inputs.size() < 4)
-			{
-				std::cout << "Invalid input!\n";
-				continue;
-			}
 			User* user = new Teacher(
 				this->getNextId(), 
 				inputs[1], 
@@ -73,11 +73,6 @@ void System::loop()
 		}
 		if (command == "add_student")
 		{
-			if (inputs.size() < 4)
-			{
-				std::cout << "Invalid input!\n";
-				continue;
-			}
 			User* user = new Teacher(
 				this->getNextId(), 
 				inputs[1], 
