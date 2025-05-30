@@ -10,6 +10,4 @@ public:
 		const String& email, const String& pwd);
 
 	UserRole getRole() const override;
-
-	std::ofstream& serialize(std::ofstream& os) const override;
 };

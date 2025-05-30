@@ -159,7 +159,7 @@ void User::setPassword(const String& pwd)
     this->password_ = pwd;
 }
 
-String& User::readString(std::ifstream& is) const
+String User::readString(std::ifstream& is) const
 {
     size_t len = 0;
     is.read((char*)&len, sizeof(len));

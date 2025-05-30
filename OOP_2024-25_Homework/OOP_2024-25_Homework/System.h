@@ -12,21 +12,7 @@ public:
 
 	void initialize();
 	void loop();
-	Response<void> updateFile();
-	Response<void> updateUsers();
 	void finalize();
-
-	Response<User*> getUserById(size_t id) const;
-	Response<User*> getUserByEmail(const String& email) const;
-	const Vector<User*>& getUsers() const;
-	User* getCurrentUser() const;
-
-	Response<void> serialize();
-	Response<void> deserialize();
-
-	Response<User*> login();
-	Response<User*> registerUser(const User& user);
-	void removeUser(size_t id);
 
 private:
 	const char* usersFile = "users.bin";
@@ -34,6 +20,24 @@ private:
 	Vector<User*> users;
 	User* currentUser;
 
+	Response<void> updateFile();
+	Response<void> updateUsers();
+
+	Response<void> serializeUsers();
+	Response<void> deserializeUsers();
+
+	User* getUserById(size_t id) const;
+	User* getUserByEmail(const String& email) const;
+	const Vector<User*>& getUsers() const;
+	User* getCurrentUser() const;
+
+	Response<User*> login(size_t id, String pwd);
+	Response<void> logout();
+	Response<User*> registerUser(const User& user);
+	void removeUser(size_t id);
+
 	void clearUsers();
 	void ensureAdminCreated();
+
+	const size_t COMMAND_INDEX = 0;
 };

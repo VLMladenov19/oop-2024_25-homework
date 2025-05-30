@@ -16,17 +16,47 @@ System::~System()
 
 void System::initialize()
 {
-	// Add ensureAdminCreated method
 	this->updateUsers();
+	this->ensureAdminCreated();
 }
 
-Response<void> System::serialize()
+void System::loop()
+{
+	while (true)
+	{
+		std::cout << "> ";
+		String line;
+		getline(std::cin, line);
+
+		if (line.empty())
+		{
+			continue;
+		}
+
+		Vector<String> inputs = line.split();
+		String command = inputs[System::COMMAND_INDEX];
+		if (command == "login")
+		{
+			Response<User*> res = this->login(inputs[1].toNumber(), inputs[2]);
+			std::cout << res.message << '\n';
+			continue;
+		}
+		if (command == "logout")
+		{
+			Response<void> res = this->logout();
+			std::cout << res.message << '\n';
+			continue;
+		}
+	}
+}
+
+Response<void> System::serializeUsers()
 {
 	std::ofstream os(System::usersFile, std::ios::binary | std::ios::out);
 
 	if (!os.is_open())
 	{
-		return Response<void>(false, 
+		return Response<void>(false,
 			String("Failed to open file for writing: ") + System::usersFile);
 	}
 
@@ -48,7 +78,7 @@ Response<void> System::serialize()
 	return Response<void>(true);
 }
 
-Response<void> System::deserialize()
+Response<void> System::deserializeUsers()
 {
 	std::ifstream is(System::usersFile, std::ios::binary | std::ios::out);
 
@@ -94,6 +124,39 @@ Response<void> System::deserialize()
 	return Response<void>(true);
 }
 
+Response<User*> System::login(size_t id, String pwd)
+{
+	if (this->currentUser)
+	{
+		return Response<User*>(false, "User already logged in", nullptr);
+	}
+
+	User* user = this->getUserById(id);
+
+	if (!user)
+	{
+		return Response<User*>(false, "Invalid user id!", nullptr);
+	}
+
+	if (!user->checkPassword(pwd))
+	{
+		return Response<User*>(false, "Wrong password!", nullptr);
+	}
+
+	this->currentUser = user;
+	return Response<User*>(true, "Login successful!", user);
+}
+
+Response<void> System::logout()
+{
+	if (currentUser)
+	{
+		currentUser = nullptr;
+		return Response<void>(true, "Logout successful!");
+	}
+	return Response<void>(true, "User not logged in!");
+}
+
 void System::clearUsers()
 {
 	for (size_t i = 0; i < this->users.size(); i++)
@@ -106,14 +169,30 @@ void System::clearUsers()
 	this->currentUser = nullptr;
 }
 
+void System::ensureAdminCreated()
+{
+	size_t usersCount = this->users.size();
+	for (size_t i = 0; i < usersCount; i++)
+	{
+		if (this->users[i] && this->users[i]->getRole() == UserRole::Admin)
+		{
+			return;
+		}
+	}
+
+	Admin* admin = new Admin(0, "admin", "", "admin@email.com", "0000");
+	this->users.insert(0, admin);
+	this->updateFile();
+}
+
 Response<void> System::updateFile()
 {
-	return this->serialize();
+	return this->serializeUsers();
 }
 
 Response<void> System::updateUsers()
 {
-	return this->deserialize();
+	return this->deserializeUsers();
 }
 
 void System::finalize()
@@ -121,32 +200,26 @@ void System::finalize()
 	this->updateFile();
 }
 
-Response<User*> System::getUserById(size_t id) const
+User* System::getUserById(size_t id) const
 {
 	size_t usersCount = this->users.size();
 	for (size_t i = 0; i < usersCount; i++)
 	{
 		if (this->users[i]->getId() == id)
-			return Response<User*>(true, 
-				"User found!", 
-				this->users[i]);
+			return this->users[i];
 	}
-
-	return Response<User*>(false, "User not found!", nullptr);
+	return nullptr;
 }
 
-Response<User*> System::getUserByEmail(const String& email) const
+User* System::getUserByEmail(const String& email) const
 {
 	size_t usersCount = this->users.size();
 	for (size_t i = 0; i < usersCount; i++)
 	{
 		if (this->users[i]->getEmail() == email)
-			return Response<User*>(true,
-				"User found!",
-				this->users[i]);
+			return this->users[i];
 	}
-
-	return Response<User*>(false, "User not found!", nullptr);
+	return nullptr;
 }
 
 const Vector<User*>& System::getUsers() const

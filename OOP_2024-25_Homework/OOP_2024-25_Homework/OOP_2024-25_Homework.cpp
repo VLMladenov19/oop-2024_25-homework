@@ -11,7 +11,7 @@ int main()
 
 	sys.initialize();
 	
-	// sys.loop();
+	sys.loop();
 
 	sys.finalize();
 }
