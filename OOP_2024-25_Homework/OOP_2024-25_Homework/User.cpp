@@ -103,6 +103,9 @@ void User::changePassword(const String& currPwd, const String& newPwd)
 
 std::ofstream& User::serialize(std::ofstream& os) const
 {
+    UserRole role = this->getRole();
+    os.write((const char*)&role, sizeof(role));
+
     os.write((const char*)&this->id_, sizeof(this->id_));
 
     size_t fNameLen = this->firstName_.size();
