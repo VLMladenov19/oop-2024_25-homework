@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include "Vector.h"
 
 class String
 {
@@ -21,6 +22,7 @@ public:
 
 	String toLower() const;
 	String toUpper() const;
+	size_t toNumber() const;
 
 	String& append(const String& other);
 	String& append(const char* data);
@@ -40,13 +42,17 @@ public:
 	size_t find(const String& str, size_t pos = 0) const;
 	size_t find(const char* str, size_t pos = 0) const;
 
+	Vector<String> split(char delimeter = ' ') const;
+
 	friend void swap(String& lhs, String& rhs);
 
 	String& operator+=(const String& other);
 	friend String operator+(const String& lhs, const String& rhs);
 	char& operator[](size_t pos);
 	const char& operator[](size_t pos) const;
+
 	operator const char* () const;
+
 	bool operator==(const String& other) const;
 	bool operator==(const char* data) const;
 	bool operator!=(const String& other) const;

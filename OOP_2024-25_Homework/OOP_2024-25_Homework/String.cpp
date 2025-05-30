@@ -125,6 +125,32 @@ String String::toUpper() const
 	return result;
 }
 
+size_t String::toNumber() const
+{
+	if (this->size_ == 0)
+	{
+		return String::npos;
+	}
+
+	size_t result = 0;
+	bool changed = false;
+	for (size_t i = 0; i < this->size_; i++)
+	{
+		if (this->data_[i] < '0' || this->data_[i] > '9')
+		{
+			if (!changed)
+			{
+				return String::npos;
+			}
+			break;
+		}
+		result = result * 10 + (this->data_[i] - '0');
+		changed = true;
+	}
+
+	return result;
+}
+
 String& String::append(const String& other)
 {
 	*this += other;
@@ -318,6 +344,34 @@ size_t String::find(const char* str, size_t pos) const
 	return find(String(str), pos);
 }
 
+Vector<String> String::split(char delimeter) const
+{
+	Vector<String> result;
+	size_t start = 0;
+	
+	char* str = new char[this->size_ + 1];
+	size_t len = 0;
+	for (size_t i = 0; i < this->size_; i++)
+	{
+		if (this->data_[i] == delimeter)
+		{
+			str[len] = '\0';
+			result.push_back(str);
+			len = 0;
+			continue;
+		}
+		str[len++] = this->data_[i];
+	}
+	if (len)
+	{
+		str[len] = '\0';
+		result.push_back(str);
+	}
+	delete[] str;
+
+	return result;
+}
+
 void String::resize(size_t capacity)
 {
 	this->capacity_ = capacity;
@@ -344,7 +398,7 @@ size_t String::allocateCapacity(size_t size) const
 
 void String::copyFrom(const String& other)
 {
-	delete[] this->data_;
+	// delete[] this->data_;
 	this->capacity_ = other.capacity_;
 	this->size_ = other.size_;
 	this->data_ = new char[this->capacity_ + 1];
@@ -413,7 +467,7 @@ bool String::operator==(const char* data) const
 		return false;
 	}
 
-	return strcmp(this->data_, data_) == 0;
+	return strcmp(this->data_, data) == 0;
 }
 
 bool String::operator!=(const String& other) const
@@ -437,7 +491,8 @@ std::istream& getline(std::istream& is, String& str, char delim)
 			break;
 		str.push_back(ch);
 	}
-	
+	str.push_back('\0');
+
 	return is;
 }
 
