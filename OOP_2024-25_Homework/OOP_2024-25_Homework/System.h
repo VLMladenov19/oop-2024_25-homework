@@ -28,7 +28,6 @@ private:
 
 	User* getUserById(size_t id) const;
 	User* getUserByEmail(const String& email) const;
-	const Vector<User*>& getUsers() const;
 	User* getCurrentUser() const;
 
 	Response<User*> login(size_t id, String pwd);

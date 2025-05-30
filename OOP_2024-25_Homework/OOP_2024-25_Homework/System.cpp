@@ -1,5 +1,7 @@
 #include "System.h"
 #include "Admin.h"
+#include "Teacher.h"
+#include "Student.h"
 
 #include <fstream>
 
@@ -48,6 +50,21 @@ void System::loop()
 			continue;
 		}
 	}
+}
+
+void System::finalize()
+{
+	this->updateFile();
+}
+
+Response<void> System::updateFile()
+{
+	return this->serializeUsers();
+}
+
+Response<void> System::updateUsers()
+{
+	return this->deserializeUsers();
 }
 
 Response<void> System::serializeUsers()
@@ -101,14 +118,14 @@ Response<void> System::deserializeUsers()
 		User* user = nullptr;
 		switch (role)
 		{
-		case UserRole::Admin: 
+		case UserRole::Admin:
 			user = new Admin(0, "", "", "", "");
 			break;
-		case UserRole::Teacher: return "Teacher";
-			//user = new Teacher(0, "", "", "", "");
+		case UserRole::Teacher:
+			user = new Teacher(0, "", "", "", "");
 			break;
-		case UserRole::Student: return "Student";
-			//user = new Student(0, "", "", "", "");
+		case UserRole::Student:
+			user = new Student(0, "", "", "", "");
 			break;
 		default:
 			user = new User(0, "", "", "", "");
@@ -122,6 +139,33 @@ Response<void> System::deserializeUsers()
 	is.close();
 
 	return Response<void>(true);
+}
+
+User* System::getUserById(size_t id) const
+{
+	size_t usersCount = this->users.size();
+	for (size_t i = 0; i < usersCount; i++)
+	{
+		if (this->users[i]->getId() == id)
+			return this->users[i];
+	}
+	return nullptr;
+}
+
+User* System::getUserByEmail(const String& email) const
+{
+	size_t usersCount = this->users.size();
+	for (size_t i = 0; i < usersCount; i++)
+	{
+		if (this->users[i]->getEmail() == email)
+			return this->users[i];
+	}
+	return nullptr;
+}
+
+User* System::getCurrentUser() const
+{
+	return this->currentUser;
 }
 
 Response<User*> System::login(size_t id, String pwd)
@@ -183,51 +227,4 @@ void System::ensureAdminCreated()
 	Admin* admin = new Admin(0, "admin", "", "admin@email.com", "0000");
 	this->users.insert(0, admin);
 	this->updateFile();
-}
-
-Response<void> System::updateFile()
-{
-	return this->serializeUsers();
-}
-
-Response<void> System::updateUsers()
-{
-	return this->deserializeUsers();
-}
-
-void System::finalize()
-{
-	this->updateFile();
-}
-
-User* System::getUserById(size_t id) const
-{
-	size_t usersCount = this->users.size();
-	for (size_t i = 0; i < usersCount; i++)
-	{
-		if (this->users[i]->getId() == id)
-			return this->users[i];
-	}
-	return nullptr;
-}
-
-User* System::getUserByEmail(const String& email) const
-{
-	size_t usersCount = this->users.size();
-	for (size_t i = 0; i < usersCount; i++)
-	{
-		if (this->users[i]->getEmail() == email)
-			return this->users[i];
-	}
-	return nullptr;
-}
-
-const Vector<User*>& System::getUsers() const
-{
-	return this->users;
-}
-
-User* System::getCurrentUser() const
-{
-	return this->currentUser;
 }
