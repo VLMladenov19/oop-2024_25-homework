@@ -32,11 +32,12 @@ private:
 
 	Response<User*> login(size_t id, String pwd);
 	Response<void> logout();
-	Response<User*> registerUser(const User& user);
+	Response<User*> registerUser(User* user);
 	void removeUser(size_t id);
 
 	void clearUsers();
 	void ensureAdminCreated();
+	size_t getNextId();
 
 	const size_t COMMAND_INDEX = 0;
 };

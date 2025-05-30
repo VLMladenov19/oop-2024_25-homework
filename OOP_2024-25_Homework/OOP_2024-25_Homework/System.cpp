@@ -12,7 +12,6 @@ System::System() : currentUser(nullptr)
 System::~System()
 {
 	this->finalize();
-
 	this->clearUsers();
 }
 
@@ -47,6 +46,52 @@ void System::loop()
 		{
 			Response<void> res = this->logout();
 			std::cout << res.message << '\n';
+			continue;
+		}
+		if (command == "add_teacher")
+		{
+			if (inputs.size() < 4)
+			{
+				std::cout << "Invalid input!\n";
+				continue;
+			}
+			User* user = new Teacher(
+				this->getNextId(), 
+				inputs[1], 
+				inputs[2], 
+				"", 
+				inputs[3]);
+			Response<User*> res = this->registerUser(user);
+			if (!res.success)
+			{
+				std::cout << res.message << '\n';
+				continue;
+			}
+			std::cout << "Added teacher " << user->getFirstName() << " " <<
+				user->getLastName() << " with ID " << user->getId() << "!\n";
+			continue;
+		}
+		if (command == "add_student")
+		{
+			if (inputs.size() < 4)
+			{
+				std::cout << "Invalid input!\n";
+				continue;
+			}
+			User* user = new Teacher(
+				this->getNextId(), 
+				inputs[1], 
+				inputs[2], 
+				"", 
+				inputs[3]);
+			Response<User*> res = this->registerUser(user);
+			if (!res.success)
+			{
+				std::cout << res.message << '\n';
+				continue;
+			}
+			std::cout << "Added student " << user->getFirstName() << " " <<
+				user->getLastName() << " with ID " << user->getId() << "!\n";
 			continue;
 		}
 	}
@@ -201,6 +246,26 @@ Response<void> System::logout()
 	return Response<void>(true, "User not logged in!");
 }
 
+Response<User*> System::registerUser(User* user)
+{
+	if (this->currentUser == nullptr ||
+		this->currentUser->getRole() != UserRole::Admin)
+	{
+		delete user;
+		return Response<User*>(false, "Access denied!", nullptr);
+	}
+	if (user->getRole() == UserRole::Admin)
+	{
+		delete user;
+		return Response<User*>(false, "Cannot add admin!", nullptr);
+	}
+	
+	this->users.push_back(user);
+	this->updateFile();
+	
+	return Response<User*>(true, "User added successfully", user);
+}
+
 void System::clearUsers()
 {
 	for (size_t i = 0; i < this->users.size(); i++)
@@ -227,4 +292,10 @@ void System::ensureAdminCreated()
 	Admin* admin = new Admin(0, "admin", "", "admin@email.com", "0000");
 	this->users.insert(0, admin);
 	this->updateFile();
+}
+
+size_t System::getNextId()
+{
+	size_t lastId = this->users[this->users.size() - 1]->getId();
+	return lastId == 0 ? 100 : lastId + 1;
 }
