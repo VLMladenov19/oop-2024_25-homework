@@ -33,7 +33,7 @@ private:
 	Response<User*> login(size_t id, String pwd);
 	Response<void> logout();
 	Response<User*> registerUser(User* user);
-	void removeUser(size_t id);
+	Response<void> removeUser(size_t id);
 
 	void clearUsers();
 	void ensureAdminCreated();

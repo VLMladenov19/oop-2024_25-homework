@@ -39,12 +39,39 @@ void System::loop()
 		if (command == "login")
 		{
 			Response<User*> res = this->login(inputs[1].toNumber(), inputs[2]);
-			std::cout << res.message << '\n';
+			if (!res.success)
+			{
+				std::cout << res.message << '\n';
+				continue;
+			}
+			UserRole role = this->currentUser->getRole();
+			if (role == UserRole::Admin)
+			{
+				std::cout << res.message << '\n';
+				continue;
+			}
+			std::cout << this->currentUser->getFirstName() << " " <<
+				this->currentUser->getLastName() << " | ";
+			if (role == UserRole::Teacher)
+			{
+				std::cout << "Teacher | ";
+			}
+			else if (role == UserRole::Student)
+			{
+				std::cout << "Student | ";
+			}
+			std::cout << this->currentUser->getId() << '\n';
 			continue;
 		}
 		if (command == "logout")
 		{
 			Response<void> res = this->logout();
+			std::cout << res.message << '\n';
+			continue;
+		}
+		if (command == "remove")
+		{
+			Response<void> res = this->removeUser(inputs[1].toNumber());
 			std::cout << res.message << '\n';
 			continue;
 		}
@@ -73,7 +100,7 @@ void System::loop()
 		}
 		if (command == "add_student")
 		{
-			User* user = new Teacher(
+			User* user = new Student(
 				this->getNextId(), 
 				inputs[1], 
 				inputs[2], 
@@ -82,7 +109,7 @@ void System::loop()
 			Response<User*> res = this->registerUser(user);
 			if (!res.success)
 			{
-				std::cout << res.message << '\n';
+				std::cout << res.message <<		'\n';
 				continue;
 			}
 			std::cout << "Added student " << user->getFirstName() << " " <<
@@ -243,7 +270,7 @@ Response<void> System::logout()
 
 Response<User*> System::registerUser(User* user)
 {
-	if (this->currentUser == nullptr ||
+	if (!this->currentUser ||
 		this->currentUser->getRole() != UserRole::Admin)
 	{
 		delete user;
@@ -259,6 +286,33 @@ Response<User*> System::registerUser(User* user)
 	this->updateFile();
 	
 	return Response<User*>(true, "User added successfully", user);
+}
+
+Response<void> System::removeUser(size_t id)
+{
+	if (!this->currentUser ||
+		this->currentUser->getRole() != UserRole::Admin)
+	{
+		return Response<void>(false, "Access denied!");
+	}
+
+	if (this->currentUser->getId() == id)
+	{
+		return Response<void>(false, "Can't remove current user!");
+	}
+
+	size_t usersCount = this->users.size();
+	for (size_t i = 0; i < usersCount; i++)
+	{
+		if (this->users[i]->getId() == id)
+		{
+			this->users.remove(i);
+			this->updateFile();
+			return Response<void>(true, "User successfully removed!");
+		}
+	}
+
+	return Response<void>(false, "Invalid id!");
 }
 
 void System::clearUsers()
