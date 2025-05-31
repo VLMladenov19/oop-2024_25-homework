@@ -1,6 +1,10 @@
 #pragma once
 
+#include <fstream>
+
 #include "String.h"
+#include "Mail.h"
+#include "Response.h"
 
 enum class UserRole
 {
@@ -36,6 +40,8 @@ public:
 
 	bool checkPassword(const String& pass) const;
 	void changePassword(const String& currPass, const String& newPass);
+
+	Response<void> sendMessage(const Mail& mail) const;
 
 	virtual std::ofstream& serialize(std::ofstream& os) const;
 	virtual std::ifstream& deserialize(std::ifstream& is);

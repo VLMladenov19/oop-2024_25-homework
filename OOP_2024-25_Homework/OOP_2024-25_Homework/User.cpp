@@ -1,7 +1,5 @@
 #include "User.h"
 
-#include <fstream>
-
 User::User(size_t id, const String& fName, const String& lName, 
     const String& email, const String& pwd)
     : id_(id), firstName_(fName), lastName_(lName), email_(email), password_(pwd)
@@ -99,6 +97,25 @@ void User::changePassword(const String& currPwd, const String& newPwd)
     {
         this->password_ = newPwd;
     }
+}
+
+Response<void> User::sendMessage(const Mail& mail) const
+{
+    String fileName = String::toString(mail.getReceiverId());
+    fileName += ".txt";
+    std::ofstream os(fileName, std::ios::app);
+
+    if (!os.is_open())
+    {
+        return Response<void>(false,
+            String("Failed to open file for writing: ") + fileName);
+    }
+
+    mail.serialize(os);
+
+    os.close();
+
+    return Response<void>(true, "Mail written successful!");
 }
 
 std::ofstream& User::serialize(std::ofstream& os) const

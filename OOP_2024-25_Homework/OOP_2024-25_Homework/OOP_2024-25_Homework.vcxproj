@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Admin.cpp" />
+    <ClCompile Include="Mail.cpp" />
     <ClCompile Include="OOP_2024-25_Homework.cpp" />
     <ClCompile Include="String.cpp" />
     <ClCompile Include="Student.cpp" />
@@ -137,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Admin.h" />
+    <ClInclude Include="Mail.h" />
     <ClInclude Include="Response.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="Student.h" />

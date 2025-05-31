@@ -2,8 +2,7 @@
 #include "Admin.h"
 #include "Teacher.h"
 #include "Student.h"
-
-#include <fstream>
+#include "Mail.h"
 
 System::System() : currentUser(nullptr)
 {
@@ -59,6 +58,11 @@ void System::loop()
 		if (command == "remove")
 		{
 			this->removeHandler(input);
+			continue;
+		}
+		if (command == "message_all")
+		{
+			this->messageAllHandler(line);
 			continue;
 		}
 	}
@@ -392,4 +396,39 @@ void System::removeHandler(const Vector<String>& input)
 {
 	Response<void> res = this->removeUser(input[1].toNumber());
 	std::cout << res.message << '\n';
+}
+
+void System::messageAllHandler(const String& line)
+{
+	if (!this->currentUser ||
+		this->currentUser->getRole() != UserRole::Admin)
+	{
+		std::cout << "Access denied!\n";
+		return;
+	}
+
+	String message = line;
+	message.erase(0, System::MESSAGE_ALL_COMMAND_LEN + 1);
+	if (message.empty())
+	{
+		std::cout << "Invalid message!\n";
+		return;
+	}
+
+	size_t usersCount = this->users.size();
+	for (size_t i = 0; i < usersCount; i++)
+	{
+		if (this->users[i]->getRole() != UserRole::Admin)
+		{
+			Mail mail(message, 
+				this->currentUser->getFirstName(), 
+				this->users[i]->getId());
+			Response<void> res = this->currentUser->sendMessage(mail);
+			
+			if (!res.success)
+			{
+				std::cout << res.message << '\n';
+			}
+		}
+	}
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+
 #include "User.h"
 #include "Response.h"
 #include "Vector.h"
@@ -15,7 +17,7 @@ public:
 	void finalize();
 
 private:
-	const char* usersFile = "users.bin";
+	const String usersFile = "users.bin";
 
 	Vector<User*> users;
 	User* currentUser;
@@ -44,6 +46,7 @@ private:
 	void addTeacherHandler(const Vector<String>& input);
 	void addStudentHandler(const Vector<String>& input);
 	void removeHandler(const Vector<String>& input);
+	void messageAllHandler(const String& line);
 
 	const size_t COMMAND_INDEX = 0;
 
@@ -60,4 +63,6 @@ private:
 
 	const size_t REMOVE_USER_INPUT_SIZE = 2;
 	const size_t REMOVE_USER_ID_INDEX = 1;
+
+	const size_t MESSAGE_ALL_COMMAND_LEN = 11;
 };
