@@ -41,6 +41,7 @@ private:
 	void ensureAdminCreated();
 	size_t getNextId();
 
+	void listHandler(const Vector<String>& input) const;
 	void loginHandler(const Vector<String>& input);
 	void logoutHandler(const Vector<String>& input);
 	void addTeacherHandler(const Vector<String>& input);

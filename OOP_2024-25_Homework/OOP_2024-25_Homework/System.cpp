@@ -39,6 +39,11 @@ void System::loop()
 		{
 			return;
 		}
+		if (command == "list")
+		{
+			this->listHandler(input);
+			continue;
+		}
 		if (command == "login")
 		{
 			this->loginHandler(input);
@@ -72,6 +77,7 @@ void System::loop()
 		if (command == "mailbox")
 		{
 			this->mailboxHandler(input);
+			continue;
 		}
 
 		std::cout << "Invalid command!\n";
@@ -306,6 +312,30 @@ size_t System::getNextId()
 {
 	size_t lastId = this->users[this->users.size() - 1]->getId();
 	return lastId == 0 ? 100 : lastId + 1;
+}
+
+void System::listHandler(const Vector<String>& input) const
+{
+	if (input.size() != System::LOGOUT_INPUT_SIZE)
+	{
+		std::cout << "Invalid input!\n";
+		return;
+	}
+
+	if (!this->currentUser ||
+		this->currentUser->getRole() != UserRole::Admin)
+	{
+		std::cout << "Access denied!\n";
+		return;
+	}
+	size_t usersCount = this->users.size();
+	for (size_t i = 0; i < usersCount; i++)
+	{
+		std::cout << this->users[i]->getFirstName() << " " <<
+			this->users[i]->getLastName() << " | " <<
+			roleToString(this->users[i]->getRole()) << " | " <<
+			this->users[i]->getId() << '\n';
+	}
 }
 
 void System::loginHandler(const Vector<String>& input)
