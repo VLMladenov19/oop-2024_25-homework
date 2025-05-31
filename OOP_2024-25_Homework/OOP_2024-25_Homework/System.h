@@ -30,14 +30,34 @@ private:
 	User* getUserByEmail(const String& email) const;
 	User* getCurrentUser() const;
 
-	Response<User*> login(size_t id, String pwd);
+	Response<void> login(size_t id, String pwd);
 	Response<void> logout();
-	Response<User*> registerUser(User* user);
+	Response<void> registerUser(User* user);
 	Response<void> removeUser(size_t id);
 
 	void clearUsers();
 	void ensureAdminCreated();
 	size_t getNextId();
 
+	void loginHandler(const Vector<String>& input);
+	void logoutHandler(const Vector<String>& input);
+	void addTeacherHandler(const Vector<String>& input);
+	void addStudentHandler(const Vector<String>& input);
+	void removeHandler(const Vector<String>& input);
+
 	const size_t COMMAND_INDEX = 0;
+
+	const size_t LOGIN_INPUT_SIZE = 3;
+	const size_t LOGIN_ID_INDEX = 1;
+	const size_t LOGIN_PASSWORD_INDEX = 2;
+
+	const size_t LOGOUT_INPUT_SIZE = 1;
+
+	const size_t ADD_USER_INPUT_SIZE = 4;
+	const size_t ADD_USER_FIRST_NAME_INDEX = 1;
+	const size_t ADD_USER_LAST_NAME_INDEX = 2;
+	const size_t ADD_USER_PASSWORD_INDEX = 3;
+
+	const size_t REMOVE_USER_INPUT_SIZE = 2;
+	const size_t REMOVE_USER_ID_INDEX = 1;
 };

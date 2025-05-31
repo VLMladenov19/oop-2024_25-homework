@@ -34,86 +34,31 @@ void System::loop()
 			continue;
 		}
 
-		Vector<String> inputs = line.split();
-		String command = inputs[System::COMMAND_INDEX];
+		Vector<String> input = line.split();
+		String command = input[System::COMMAND_INDEX];
 		if (command == "login")
 		{
-			Response<User*> res = this->login(inputs[1].toNumber(), inputs[2]);
-			if (!res.success)
-			{
-				std::cout << res.message << '\n';
-				continue;
-			}
-			UserRole role = this->currentUser->getRole();
-			if (role == UserRole::Admin)
-			{
-				std::cout << res.message << '\n';
-				continue;
-			}
-			std::cout << this->currentUser->getFirstName() << " " <<
-				this->currentUser->getLastName() << " | ";
-			if (role == UserRole::Teacher)
-			{
-				std::cout << "Teacher | ";
-			}
-			else if (role == UserRole::Student)
-			{
-				std::cout << "Student | ";
-			}
-			std::cout << this->currentUser->getId() << '\n';
+			this->loginHandler(input);
 			continue;
 		}
 		if (command == "logout")
 		{
-			Response<void> res = this->logout();
-			std::cout << res.message << '\n';
-			continue;
-		}
-		if (command == "remove")
-		{
-			Response<void> res = this->removeUser(inputs[1].toNumber());
-			std::cout << res.message << '\n';
-			continue;
-		}
-		if (inputs.size() < 4)
-		{
-			std::cout << "Invalid input!\n";
+			this->logoutHandler(input);
 			continue;
 		}
 		if (command == "add_teacher")
 		{
-			User* user = new Teacher(
-				this->getNextId(), 
-				inputs[1], 
-				inputs[2], 
-				"", 
-				inputs[3]);
-			Response<User*> res = this->registerUser(user);
-			if (!res.success)
-			{
-				std::cout << res.message << '\n';
-				continue;
-			}
-			std::cout << "Added teacher " << user->getFirstName() << " " <<
-				user->getLastName() << " with ID " << user->getId() << "!\n";
+			this->addTeacherHandler(input);
 			continue;
 		}
 		if (command == "add_student")
 		{
-			User* user = new Student(
-				this->getNextId(), 
-				inputs[1], 
-				inputs[2], 
-				"", 
-				inputs[3]);
-			Response<User*> res = this->registerUser(user);
-			if (!res.success)
-			{
-				std::cout << res.message <<		'\n';
-				continue;
-			}
-			std::cout << "Added student " << user->getFirstName() << " " <<
-				user->getLastName() << " with ID " << user->getId() << "!\n";
+			this->addStudentHandler(input);
+			continue;
+		}
+		if (command == "remove")
+		{
+			this->removeHandler(input);
 			continue;
 		}
 	}
@@ -235,27 +180,27 @@ User* System::getCurrentUser() const
 	return this->currentUser;
 }
 
-Response<User*> System::login(size_t id, String pwd)
+Response<void> System::login(size_t id, String pwd)
 {
 	if (this->currentUser)
 	{
-		return Response<User*>(false, "User already logged in", nullptr);
+		return Response<void>(false, "User already logged in");
 	}
 
 	User* user = this->getUserById(id);
 
 	if (!user)
 	{
-		return Response<User*>(false, "Invalid user id!", nullptr);
+		return Response<void>(false, "Invalid user id!");
 	}
 
 	if (!user->checkPassword(pwd))
 	{
-		return Response<User*>(false, "Wrong password!", nullptr);
+		return Response<void>(false, "Wrong password!");
 	}
 
 	this->currentUser = user;
-	return Response<User*>(true, "Login successful!", user);
+	return Response<void>(true, "Login successful!");
 }
 
 Response<void> System::logout()
@@ -268,24 +213,24 @@ Response<void> System::logout()
 	return Response<void>(true, "User not logged in!");
 }
 
-Response<User*> System::registerUser(User* user)
+Response<void> System::registerUser(User* user)
 {
 	if (!this->currentUser ||
 		this->currentUser->getRole() != UserRole::Admin)
 	{
 		delete user;
-		return Response<User*>(false, "Access denied!", nullptr);
+		return Response<void>(false, "Access denied!");
 	}
 	if (user->getRole() == UserRole::Admin)
 	{
 		delete user;
-		return Response<User*>(false, "Cannot add admin!", nullptr);
+		return Response<void>(false, "Cannot add admin!");
 	}
 	
 	this->users.push_back(user);
 	this->updateFile();
 	
-	return Response<User*>(true, "User added successfully", user);
+	return Response<void>(true, "User added successfully");
 }
 
 Response<void> System::removeUser(size_t id)
@@ -347,4 +292,104 @@ size_t System::getNextId()
 {
 	size_t lastId = this->users[this->users.size() - 1]->getId();
 	return lastId == 0 ? 100 : lastId + 1;
+}
+
+void System::loginHandler(const Vector<String>& input)
+{
+	if (input.size() != System::LOGIN_INPUT_SIZE)
+	{
+		std::cout << "Invalid input!\n";
+		return;
+	}
+
+	Response<void> res = this->login(input[System::LOGIN_ID_INDEX].toNumber(), 
+		input[System::LOGIN_PASSWORD_INDEX]);
+	if (!res.success)
+	{
+		std::cout << res.message << '\n';
+		return;
+	}
+	UserRole role = this->currentUser->getRole();
+	if (role == UserRole::Admin)
+	{
+		std::cout << res.message << '\n';
+		return;
+	}
+	std::cout << this->currentUser->getFirstName() << " " <<
+		this->currentUser->getLastName() << " | ";
+	if (role == UserRole::Teacher)
+	{
+		std::cout << "Teacher | ";
+	}
+	else if (role == UserRole::Student)
+	{
+		std::cout << "Student | ";
+	}
+	std::cout << this->currentUser->getId() << '\n';
+}
+
+void System::logoutHandler(const Vector<String>& input)
+{
+	if (input.size() != System::LOGOUT_INPUT_SIZE)
+	{
+		std::cout << "Invalid input!\n";
+		return;
+	}
+
+	Response<void> res = this->logout();
+	std::cout << res.message << '\n';
+}
+
+void System::addTeacherHandler(const Vector<String>& input)
+{
+	if (input.size() != System::ADD_USER_INPUT_SIZE)
+	{
+		std::cout << "Invalid input!\n";
+		return;
+	}
+
+	User* user = new Teacher(
+		this->getNextId(),
+		input[1],
+		input[2],
+		"",
+		input[3]);
+	Response<void> res = this->registerUser(user);
+	if (!res.success)
+	{
+		std::cout << res.message << '\n';
+		return;
+	}
+	std::cout << "Added teacher " << user->getFirstName() << " " <<
+		user->getLastName() << " with ID " << user->getId() << "!\n";
+}
+
+void System::addStudentHandler(const Vector<String>& input)
+{
+	if (input.size() != System::ADD_USER_INPUT_SIZE)
+	{
+		std::cout << "Invalid input!\n";
+		return;
+	}
+
+	User* user = new Student(
+		this->getNextId(),
+		input[1],
+		input[2],
+		"",
+		input[3]);
+	Response<void> res = this->registerUser(user);
+	if (!res.success)
+	{
+		std::cout << res.message << '\n';
+		return;
+	}
+	std::cout << "Added student " << user->getFirstName() << " " <<
+		user->getLastName() << " with ID " << user->getId() << "!\n";
+}
+
+void System::removeHandler(const Vector<String>& input)
+{
+	Response<void> res = this->removeUser(input[1].toNumber());
+	std::cout << res.message << '\n';
 }
