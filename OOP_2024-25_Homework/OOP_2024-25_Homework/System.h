@@ -47,6 +47,7 @@ private:
 	void addStudentHandler(const Vector<String>& input);
 	void removeHandler(const Vector<String>& input);
 	void messageAllHandler(const String& line);
+	void mailboxHandler(const Vector<String>& input);
 
 	const size_t COMMAND_INDEX = 0;
 
@@ -65,4 +66,6 @@ private:
 	const size_t REMOVE_USER_ID_INDEX = 1;
 
 	const size_t MESSAGE_ALL_COMMAND_LEN = 11;
+
+	const size_t MAILBOX_INPUT_SIZE = 1;
 };

@@ -35,6 +35,10 @@ void System::loop()
 
 		Vector<String> input = line.split();
 		String command = input[System::COMMAND_INDEX];
+		if (command == "exit")
+		{
+			return;
+		}
 		if (command == "login")
 		{
 			this->loginHandler(input);
@@ -65,6 +69,12 @@ void System::loop()
 			this->messageAllHandler(line);
 			continue;
 		}
+		if (command == "mailbox")
+		{
+			this->mailboxHandler(input);
+		}
+
+		std::cout << "Invalid command!\n";
 	}
 }
 
@@ -430,5 +440,28 @@ void System::messageAllHandler(const String& line)
 				std::cout << res.message << '\n';
 			}
 		}
+	}
+}
+
+void System::mailboxHandler(const Vector<String>& input)
+{
+	if (input.size() != System::MAILBOX_INPUT_SIZE)
+	{
+		std::cout << "Invalid input!\n";
+		return;
+	}
+
+	Vector<Mail> mailbox = this->currentUser->getMail();
+	size_t mailCount = mailbox.size();
+	for (size_t i = 0; i < mailCount; i++)
+	{
+		time_t sentOn = mailbox[i].getSentOn();
+
+		char buffer[26];
+		ctime_s(buffer, sizeof(buffer), &sentOn);
+		buffer[strlen(buffer) - 1] = '\0';
+
+		std::cout << buffer << ", sent by " <<
+			mailbox[i].getSenderName() << ": " << mailbox[i].getMessage() << "\n";
 	}
 }

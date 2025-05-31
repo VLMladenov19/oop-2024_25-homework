@@ -42,6 +42,7 @@ public:
 	void changePassword(const String& currPass, const String& newPass);
 
 	Response<void> sendMessage(const Mail& mail) const;
+	Vector<Mail> getMail() const;
 
 	virtual std::ofstream& serialize(std::ofstream& os) const;
 	virtual std::ifstream& deserialize(std::ifstream& is);

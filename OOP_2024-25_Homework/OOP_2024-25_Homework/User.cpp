@@ -118,6 +118,35 @@ Response<void> User::sendMessage(const Mail& mail) const
     return Response<void>(true, "Mail written successful!");
 }
 
+Vector<Mail> User::getMail() const
+{
+    Vector<Mail> mailbox;
+
+    String fileName = String::toString(this->getId());
+    fileName += ".txt";
+
+    std::ifstream is(fileName);
+
+    if (!is.is_open())
+    {
+        return mailbox;
+    }
+
+    while (!is.eof())
+    {
+        Mail mail;
+        mail.deserialize(is);
+        
+        if (is.eof())
+        {
+            break;
+        }
+        mailbox.push_back(mail);
+    }
+
+    return mailbox;
+}
+
 std::ofstream& User::serialize(std::ofstream& os) const
 {
     UserRole role = this->getRole();

@@ -1,9 +1,28 @@
 #include "Mail.h"
 
+Mail::Mail()
+    : sentOn_(), message_(), senderName_(), receiverId_()
+{
+}
+
 Mail::Mail(const String& message, const String& senderName, size_t receiverId)
 	: message_(message), senderName_(senderName), receiverId_(receiverId)
 {
 	this->sentOn_ = std::time(nullptr);
+}
+
+Mail::Mail(const Mail& other)
+{
+    copyFrom(other);
+}
+
+Mail& Mail::operator=(const Mail& other)
+{
+    if (this != &other)
+    {
+        copyFrom(other);
+    }
+    return *this;
 }
 
 std::time_t Mail::getSentOn() const
@@ -61,4 +80,12 @@ std::ifstream& Mail::deserialize(std::ifstream& is)
     this->message_ = message;
 
 	return is;
+}
+
+void Mail::copyFrom(const Mail& other)
+{
+    this->sentOn_ = other.sentOn_;
+    this->message_ = other.message_;
+    this->senderName_ = other.senderName_;
+    this->receiverId_ = other.receiverId_;
 }

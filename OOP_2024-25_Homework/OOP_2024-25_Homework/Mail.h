@@ -7,7 +7,10 @@
 class Mail
 {
 public:
+	Mail();
 	Mail(const String& message, const String& senderName, size_t receiverId);
+	Mail(const Mail& other);
+	Mail& operator=(const Mail& other);
 
 	std::time_t getSentOn() const;
 	const String& getMessage() const;
@@ -22,6 +25,8 @@ private:
 	String message_;
 	String senderName_;
 	size_t receiverId_;
+
+	void copyFrom(const Mail& other);
 
 	const String mailDelimeter = "|||MAIL_END|||";
 };
